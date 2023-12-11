@@ -6,13 +6,13 @@ import (
 	"os"
 	"time"
 
-	pb "github.com/baking-code/grpc-go-playground/src/greet"
+	pb "github.com/baking-code/grpc-go-playground/src/recipes"
 	"google.golang.org/grpc"
 )
 
 const (
-	address     = "localhost:50051"
-	defaultName = "Benjamin"
+	address   = "localhost:50051"
+	defaultId = "1"
 )
 
 func main() {
@@ -22,19 +22,19 @@ func main() {
 	}
 	defer conn.Close()
 
-	c := pb.NewGreeterClient(conn)
+	c := pb.NewRecipesClient(conn)
 
-	name := defaultName
+	id := defaultId
 	if len(os.Args) > 1 {
-		name = os.Args[1]
+		id = os.Args[1]
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name})
+	r, err := c.GetRecipe(ctx, &pb.GetRecipeRequest{Id: id})
 	if err != nil {
-		log.Fatalf("Could not greet: %v", err)
+		log.Fatalf("Could not get recipe: %v", err)
 	}
-	log.Printf("Greeting: %s", r.Message)
+	log.Printf("Recipe: %s", r)
 }

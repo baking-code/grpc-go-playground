@@ -5,23 +5,23 @@ import (
 	"log"
 	"net"
 
-	"github.com/baking-code/grpc-go-playground/src/greet"
-	pb "github.com/baking-code/grpc-go-playground/src/greet"
+	"github.com/baking-code/grpc-go-playground/src/recipes"
+	pb "github.com/baking-code/grpc-go-playground/src/recipes"
 
 	"google.golang.org/grpc"
 )
 
 type instance struct {
-	greet.UnimplementedGreeterServer
+	recipes.UnimplementedRecipesServer
 }
 
-// mustEmbedUnimplementedGreeterServer implements greet.GreeterServer.
-func (*instance) mustEmbedUnimplementedGreeterServer() {
+// mustEmbedUnimplementedRecipesServer implements recipes.RecipesServer.
+func (*instance) mustEmbedUnimplementedRecipesServer() {
 	panic("unimplemented")
 }
 
-func (s *instance) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	return &pb.HelloReply{Message: "Hello, " + in.Name}, nil
+func (s *instance) GetRecipe(ctx context.Context, in *pb.GetRecipeRequest) (*pb.Recipe, error) {
+	return &pb.Recipe{Id: "1", Name: "Beans on toast", TimeInMinutes: 8}, nil
 }
 
 const PORT = ":50051"
@@ -34,9 +34,9 @@ func main() {
 
 	s := grpc.NewServer()
 
-	greeterInstance := instance{}
+	serverInstance := instance{}
 
-	pb.RegisterGreeterServer(s, &greeterInstance)
+	pb.RegisterRecipesServer(s, &serverInstance)
 
 	log.Println("Server started on:", PORT)
 	if err := s.Serve(lis); err != nil {
